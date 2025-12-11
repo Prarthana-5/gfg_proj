@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { grievanceService } from '../../services/api';
+import { supabaseGrievanceService } from '../../services/supabase';
+import { useAuth } from '../../context/AuthContext';
 import './NewGrievance.css';
 
 const NewGrievance = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     category: '',
     subject: '',
@@ -55,13 +57,13 @@ const NewGrievance = () => {
     setLoading(true);
 
     try {
-      const response = await grievanceService.createGrievance(formData);
+      const response = await supabaseGrievanceService.createGrievance(user.id, formData);
       setSuccess(`Grievance submitted successfully! Your tracking ID is: ${response.id}`);
       setTimeout(() => {
         navigate('/user/grievances');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to submit grievance. Please try again.');
+      setError(err.message || 'Failed to submit grievance. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { userService } from '../../services/api';
+import { supabaseUserService } from '../../services/supabase';
 import './Profile.css';
 
 const Profile = () => {
@@ -30,11 +30,11 @@ const Profile = () => {
     setLoading(true);
 
     try {
-      await userService.updateUserProfile(formData);
+      await supabaseUserService.updateUserProfile(user.id, formData);
       setSuccess('Profile updated successfully');
       setIsEditing(false);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      setError(err.message || 'Failed to update profile');
     } finally {
       setLoading(false);
     }

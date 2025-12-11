@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../services/api';
+import { supabase, supabaseAuthService } from '../services/supabase';
 
 const AuthContext = createContext(null);
 
@@ -16,23 +16,52 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-    setLoading(false);
+    const initAuth = async () => {
+      try {
+        const session = await supabaseAuthService.getSession();
+        if (session?.user) {
+          const currentUser = await supabaseAuthService.getCurrentUser();
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error('Auth init error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const currentUser = await supabaseAuthService.getCurrentUser();
+          setUser(currentUser);
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => subscription?.unsubscribe();
   }, []);
 
   const login = async (email, password) => {
-    const data = await authService.login(email, password);
+    const data = await supabaseAuthService.signin(email, password);
     setUser(data.user);
     return data;
   };
 
   const register = async (userData) => {
-    return await authService.register(userData);
+    const data = await supabaseAuthService.signup(userData.email, userData.password, {
+      name: userData.name,
+      phone: userData.phone
+    });
+    return data;
   };
 
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    await supabaseAuthService.signout();
     setUser(null);
   };
 

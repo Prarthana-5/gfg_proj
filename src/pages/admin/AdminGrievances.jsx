@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { grievanceService } from '../../services/api';
+import { supabaseGrievanceService } from '../../services/supabase';
 import '../user/Grievances.css';
 
 const AdminGrievances = () => {
@@ -26,7 +26,7 @@ const AdminGrievances = () => {
 
   const loadGrievances = async () => {
     try {
-      const data = await grievanceService.getAllGrievances();
+      const data = await supabaseGrievanceService.getAllGrievances();
       setGrievances(data);
       setFilteredGrievances(data);
     } catch (error) {
@@ -67,7 +67,7 @@ const AdminGrievances = () => {
 
   const submitStatusUpdate = async () => {
     try {
-      await grievanceService.updateGrievanceStatus(
+      await supabaseGrievanceService.updateGrievanceStatus(
         selectedGrievance.id,
         updateForm.status,
         updateForm.remarks

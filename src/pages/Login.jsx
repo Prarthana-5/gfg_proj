@@ -29,7 +29,7 @@ const Login = () => {
       await login(formData.email, formData.password);
       navigate('/user/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }

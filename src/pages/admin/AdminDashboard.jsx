@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { statsService, grievanceService } from '../../services/api';
+import { supabaseStatsService, supabaseGrievanceService } from '../../services/supabase';
 import '../user/Dashboard.css';
 
 const AdminDashboard = () => {
@@ -15,8 +15,8 @@ const AdminDashboard = () => {
   const loadDashboardData = async () => {
     try {
       const [statsData, grievancesData] = await Promise.all([
-        statsService.getAdminStats(),
-        grievanceService.getAllGrievances({ limit: 10 })
+        supabaseStatsService.getAdminStats(),
+        supabaseGrievanceService.getAllGrievances()
       ]);
       setStats(statsData);
       setRecentGrievances(grievancesData.slice(0, 10));

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { grievanceService } from '../../services/api';
+import { supabaseGrievanceService } from '../../services/supabase';
+import { useAuth } from '../../context/AuthContext';
 import './Grievances.css';
 
 const Grievances = () => {
+  const { user } = useAuth();
   const [grievances, setGrievances] = useState([]);
   const [filteredGrievances, setFilteredGrievances] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,8 +13,10 @@ const Grievances = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    loadGrievances();
-  }, []);
+    if (user?.id) {
+      loadGrievances();
+    }
+  }, [user]);
 
   useEffect(() => {
     filterGrievances();
@@ -20,7 +24,7 @@ const Grievances = () => {
 
   const loadGrievances = async () => {
     try {
-      const data = await grievanceService.getUserGrievances();
+      const data = await supabaseGrievanceService.getUserGrievances(user.id);
       setGrievances(data);
       setFilteredGrievances(data);
     } catch (error) {

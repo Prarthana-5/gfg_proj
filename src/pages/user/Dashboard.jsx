@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { grievanceService, statsService } from '../../services/api';
+import { supabaseGrievanceService, supabaseStatsService } from '../../services/supabase';
 import { useAuth } from '../../context/AuthContext';
 import './Dashboard.css';
 
@@ -11,14 +11,16 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    if (user?.id) {
+      loadDashboardData();
+    }
+  }, [user]);
 
   const loadDashboardData = async () => {
     try {
       const [statsData, grievancesData] = await Promise.all([
-        statsService.getUserStats(),
-        grievanceService.getUserGrievances()
+        supabaseStatsService.getUserStats(user.id),
+        supabaseGrievanceService.getUserGrievances(user.id)
       ]);
       setStats(statsData);
       setRecentGrievances(grievancesData.slice(0, 5));

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { userService } from '../../services/api';
+import { supabaseUserService } from '../../services/supabase';
 import '../user/Grievances.css';
 
 const AdminUsers = () => {
@@ -18,7 +18,7 @@ const AdminUsers = () => {
 
   const loadUsers = async () => {
     try {
-      const data = await userService.getAllUsers();
+      const data = await supabaseUserService.getAllUsers();
       setUsers(data);
       setFilteredUsers(data);
     } catch (error) {
